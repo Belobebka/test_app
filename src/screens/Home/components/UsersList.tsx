@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {NavigationFunctionComponent} from 'react-native-navigation';
 import {removeUser} from '../../../app/actions/users';
 import {TUser} from '../../../app/API';
 import {fetchUsersThunk} from '../../../app/asyncActions/users';
@@ -12,8 +13,9 @@ import FindInput from './FindInput';
 import {Loader} from './Loader/Loader';
 import Pagination from './Pagination';
 import {UserItem} from './UserItem';
+import {navPush} from '../../../app/utils/navigation';
 
-function UsersList() {
+const UsersList: NavigationFunctionComponent = ({componentId}) => {
     const [filter, setFilter] = React.useState('');
     const dispatch = useAppDispatch();
     const [currentPage, setCurrentPage] = useState(1);
@@ -40,13 +42,23 @@ function UsersList() {
         setFilter(text);
     }, []);
 
+    const handleSelectUser = useCallback(
+        (user: TUser) => () => {
+            navPush(componentId, {
+                name: 'UserDetail',
+                passProps: {user},
+            }).catch((e: Error) => console.log(e));
+        },
+        [componentId],
+    );
+
     const renderItem = useCallback(
         (item: TUser) => (
-            <View key={item.id} style={styles.itemWrapper}>
+            <TouchableOpacity key={item.id} style={styles.itemWrapper} onPress={handleSelectUser(item)}>
                 <UserItem onRemove={handleRemoveUser} item={item} />
-            </View>
+            </TouchableOpacity>
         ),
-        [handleRemoveUser],
+        [handleRemoveUser, handleSelectUser],
     );
 
     return (
@@ -69,7 +81,7 @@ function UsersList() {
             </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     root: {flex: 1},

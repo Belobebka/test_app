@@ -1,16 +1,13 @@
 import {SafeAreaView, StyleSheet} from 'react-native';
 import React from 'react';
-import {Provider} from 'react-redux';
 
 import UsersList from './components/UsersList';
-import {store} from '../../app/store';
+import {NavigationFunctionComponent} from 'react-native-navigation';
 
-const Home = () => (
-    <Provider store={store}>
-        <SafeAreaView style={styles.root}>
-            <UsersList />
-        </SafeAreaView>
-    </Provider>
+const Home: NavigationFunctionComponent = ({componentId}) => (
+    <SafeAreaView style={styles.root}>
+        <UsersList componentId={componentId} />
+    </SafeAreaView>
 );
 
 const styles = StyleSheet.create({root: {flex: 1}});

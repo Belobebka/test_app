@@ -1,19 +1,21 @@
 import React, {useCallback} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {TUser} from '../../../app/API';
+import Icons from '../../../icons';
 import {COMMON_STYLES} from '../../../styles';
 import {ImagePlaceholder} from './ImagePlaceholder/ImagePlaceholder';
 
 interface IProps {
     item: TUser;
-    onRemove?: (id: number) => void;
+    onRemove: (id: number) => void;
 }
 
 export function UserItem(props: IProps) {
     const {item, onRemove} = props;
     const {avatar, name, id, age} = item;
 
-    const handleRemove = useCallback(() => onRemove?.(item.id), [item, onRemove]);
+    const handleRemove = useCallback(() => onRemove(item.id), [item, onRemove]);
+
     const renderDescription = useCallback(
         () => (
             <View style={styles.text}>
@@ -43,15 +45,25 @@ export function UserItem(props: IProps) {
         [handleRemove],
     );
 
+    const renderFavoriteBtn = useCallback(
+        () => (
+            <TouchableOpacity onPress={() => {}} hitSlop={{top: 16, right: 16, bottom: 16, left: 16}}>
+                <Icons.HeartBlack color={'red'} />
+            </TouchableOpacity>
+        ),
+        [],
+    );
+
     const renderBody = useCallback(() => {
         return (
             <View style={styles.body}>
                 {renderImage()}
+                {renderFavoriteBtn()}
                 {renderDescription()}
                 {renderRemoveButton()}
             </View>
         );
-    }, [renderDescription, renderImage, renderRemoveButton]);
+    }, [renderDescription, renderImage, renderFavoriteBtn, renderRemoveButton]);
 
     const renderContainer = useCallback(() => {
         return <View style={styles.container}>{renderBody()}</View>;
