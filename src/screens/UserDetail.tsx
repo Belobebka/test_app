@@ -9,7 +9,6 @@ import {removeFavorite, setFavorite} from '../app/actions/favorites';
 
 type UserDetailProps = {
     user: TUser;
-    isFavorite: boolean;
 };
 function UserDetail({user}: UserDetailProps) {
     const dispatch = useAppDispatch();

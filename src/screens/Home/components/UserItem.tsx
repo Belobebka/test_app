@@ -76,18 +76,6 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
     },
-    imageContainer: {
-        ...COMMON_STYLES.ml_1,
-        height: 100,
-        width: 100,
-        borderWidth: 1,
-        borderRadius: 16,
-    },
-    image: {
-        height: '100%',
-        width: '100%',
-        borderRadius: 16,
-    },
     removeIcon: {
         fontSize: 24,
     },
