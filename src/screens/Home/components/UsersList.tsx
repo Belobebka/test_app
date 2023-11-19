@@ -5,7 +5,7 @@ import {removeUser} from '../../../app/actions/users';
 import {TUser} from '../../../app/API';
 import {fetchUsersThunk} from '../../../app/asyncActions/users';
 import {DEFAULT_USERS_LIMIT} from '../../../app/constants';
-import {useAppDispatch, useAppSelector, useUsersListData} from '../../../app/hooks';
+import {useAppDispatch, useAppSelector, useFavorite, useUsersListData} from '../../../app/hooks';
 
 import {COMMON_STYLES} from '../../../styles';
 
@@ -14,6 +14,7 @@ import {Loader} from './Loader/Loader';
 import Pagination from './Pagination';
 import {UserItem} from './UserItem';
 import {navPush} from '../../../app/utils/navigation';
+import {removeFavorite, setFavorite} from '../../../app/actions/favorites';
 
 const UsersList: NavigationFunctionComponent = ({componentId}) => {
     const [filter, setFilter] = React.useState('');
@@ -23,6 +24,7 @@ const UsersList: NavigationFunctionComponent = ({componentId}) => {
 
     const dataProps = useMemo(() => ({cursor, filter}), [cursor, filter]);
     const {users, usersLength} = useUsersListData(dataProps);
+    const {checkIsFavorite} = useFavorite();
     const status = useAppSelector(state => state.users.status);
 
     useEffect(() => {
@@ -38,27 +40,47 @@ const UsersList: NavigationFunctionComponent = ({componentId}) => {
         [dispatch],
     );
 
+    const handleChangeFavorite = useCallback(
+        (id: number) => () => {
+            const isFavorite = checkIsFavorite(id);
+
+            if (isFavorite) {
+                dispatch(removeFavorite(id));
+            } else {
+                dispatch(setFavorite(id));
+            }
+        },
+        [checkIsFavorite, dispatch],
+    );
+
     const handleFindChange = useCallback((text: string) => {
         setFilter(text);
     }, []);
 
     const handleSelectUser = useCallback(
         (user: TUser) => () => {
+            const isFavorite = checkIsFavorite(user.id);
+
             navPush(componentId, {
                 name: 'UserDetail',
-                passProps: {user},
+                passProps: {user, isFavorite},
             }).catch((e: Error) => console.log(e));
         },
-        [componentId],
+        [checkIsFavorite, componentId],
     );
 
     const renderItem = useCallback(
         (item: TUser) => (
             <TouchableOpacity key={item.id} style={styles.itemWrapper} onPress={handleSelectUser(item)}>
-                <UserItem onRemove={handleRemoveUser} item={item} />
+                <UserItem
+                    onRemove={handleRemoveUser}
+                    item={item}
+                    onChangeFavorite={handleChangeFavorite(item.id)}
+                    isFavorite={checkIsFavorite(item.id)}
+                />
             </TouchableOpacity>
         ),
-        [handleRemoveUser, handleSelectUser],
+        [checkIsFavorite, handleChangeFavorite, handleRemoveUser, handleSelectUser],
     );
 
     return (
