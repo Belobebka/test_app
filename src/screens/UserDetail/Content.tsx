@@ -1,28 +1,17 @@
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {TUser} from '../app/API';
+import {Avatar} from '../Home/components/Avatar';
+import Icons from '../../icons';
+import {Description} from '../Home/components/Description';
 import React from 'react';
-import {Avatar} from './Home/components/Avatar';
-import {Description} from './Home/components/Description';
-import Icons from '../icons';
-import {useAppDispatch, useFavorite} from '../app/hooks';
-import {removeFavorite, setFavorite} from '../app/actions/favorites';
+import {TUser} from '../../app/API';
 
-type UserDetailProps = {
+type ContentProps = {
+    isFavorite: boolean;
     user: TUser;
+    handleChangeFavorite: () => void;
 };
-function UserDetail({user}: UserDetailProps) {
-    const dispatch = useAppDispatch();
-    const {checkIsFavorite} = useFavorite();
 
-    const isFavorite = checkIsFavorite(user.id);
-    const handleChangeFavorite = () => {
-        if (isFavorite) {
-            dispatch(removeFavorite(user.id));
-        } else {
-            dispatch(setFavorite(user.id));
-        }
-    };
-
+export const Content = ({isFavorite, user, handleChangeFavorite}: ContentProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.avatarContainer}>
@@ -34,7 +23,7 @@ function UserDetail({user}: UserDetailProps) {
             <Description user={user} style={styles.text} />
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -67,5 +56,3 @@ const styles = StyleSheet.create({
         opacity: 0.9,
     },
 });
-
-export default UserDetail;

@@ -1,12 +1,7 @@
 import Home from './Home/Home';
-import {ComponentType} from 'react';
-import UserDetail from './UserDetail';
-import UsersList from './Home/components/UsersList';
+import UserDetail from './UserDetail/UserDetail';
 
-export const screens = (<T extends {[key: string]: ComponentType<any>}>(obj: T): T => obj)({
+export const screens = {
     Home,
     UserDetail,
-    UsersList,
-});
-
-export type ScreenNames = Extract<keyof typeof screens, string>;
+};

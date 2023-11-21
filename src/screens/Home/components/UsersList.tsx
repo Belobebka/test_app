@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {NavigationFunctionComponent} from 'react-native-navigation';
+import {Navigation, NavigationFunctionComponent} from 'react-native-navigation';
 import {removeUser} from '../../../app/actions/users';
 import {TUser} from '../../../app/API';
 import {fetchUsersThunk} from '../../../app/asyncActions/users';
@@ -13,7 +13,6 @@ import FindInput from './FindInput';
 import {Loader} from './Loader/Loader';
 import Pagination from './Pagination';
 import {UserItem} from './UserItem';
-import {navPush} from '../../../app/utils/navigation';
 import {removeFavorite, setFavorite} from '../../../app/actions/favorites';
 
 const UsersList: NavigationFunctionComponent = ({componentId}) => {
@@ -36,6 +35,7 @@ const UsersList: NavigationFunctionComponent = ({componentId}) => {
     const handleRemoveUser = useCallback(
         (id: number) => {
             dispatch(removeUser(id));
+            dispatch(removeFavorite(id));
         },
         [dispatch],
     );
@@ -59,14 +59,14 @@ const UsersList: NavigationFunctionComponent = ({componentId}) => {
 
     const handleSelectUser = useCallback(
         (user: TUser) => () => {
-            const isFavorite = checkIsFavorite(user.id);
-
-            navPush(componentId, {
-                name: 'UserDetail',
-                passProps: {user, isFavorite},
-            }).catch((e: Error) => console.log(e));
+            Navigation.push(componentId, {
+                component: {
+                    name: 'UserDetail',
+                    passProps: {id: user.id},
+                },
+            });
         },
-        [checkIsFavorite, componentId],
+        [componentId],
     );
 
     const renderItem = useCallback(
