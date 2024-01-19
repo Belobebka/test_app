@@ -6,6 +6,8 @@ import {DEFAULT_USERS_LIMIT} from '../constants';
 import {AppDispatch} from '../interfaces';
 import {getUsers} from '../selectors/users';
 import {RootState} from '../store';
+import {getFavorites} from '../selectors/favorites';
+import {getUser} from '../selectors/user';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = () => useDispatch<AppDispatch>();
@@ -44,4 +46,19 @@ export function useUsersListData(props: {isSortActive?: boolean; filter?: string
 
     const ctx = useMemo(() => ({users, usersLength}), [users, usersLength]);
     return ctx;
+}
+
+export function useFavorite() {
+    const favorites = useAppSelector(getFavorites);
+
+    const checkIsFavorite = (id: number): boolean => {
+        return favorites.some(el => el.id === id);
+    };
+
+    return {favorites, checkIsFavorite};
+}
+
+export function useUser() {
+    const user = useAppSelector(getUser);
+    return user;
 }

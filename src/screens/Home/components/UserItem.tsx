@@ -1,38 +1,23 @@
 import React, {useCallback} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {TUser} from '../../../app/API';
+import Icons from '../../../icons';
 import {COMMON_STYLES} from '../../../styles';
-import {ImagePlaceholder} from './ImagePlaceholder/ImagePlaceholder';
+import {Description} from './Description';
+import {Avatar} from './Avatar';
+import {hitSlop} from '../../../app/constants';
 
 interface IProps {
     item: TUser;
-    onRemove?: (id: number) => void;
+    onRemove: (id: number) => void;
+    isFavorite: boolean;
+    onChangeFavorite: () => void;
 }
 
 export function UserItem(props: IProps) {
-    const {item, onRemove} = props;
-    const {avatar, name, id, age} = item;
+    const {item, onRemove, isFavorite, onChangeFavorite} = props;
 
-    const handleRemove = useCallback(() => onRemove?.(item.id), [item, onRemove]);
-    const renderDescription = useCallback(
-        () => (
-            <View style={styles.text}>
-                <Text>id: {id}</Text>
-                <Text>Name: {name}</Text>
-                <Text>Age: {age}</Text>
-            </View>
-        ),
-        [age, id, name],
-    );
-
-    const renderImage = useCallback(
-        () => (
-            <View style={styles.imageContainer}>
-                {avatar ? <Image style={styles.image} source={{uri: avatar}} /> : <ImagePlaceholder />}
-            </View>
-        ),
-        [avatar],
-    );
+    const handleRemove = useCallback(() => onRemove(item.id), [item, onRemove]);
 
     const renderRemoveButton = useCallback(
         () => (
@@ -43,15 +28,25 @@ export function UserItem(props: IProps) {
         [handleRemove],
     );
 
+    const renderFavoriteBtn = useCallback(
+        () => (
+            <TouchableOpacity onPress={onChangeFavorite} hitSlop={hitSlop} style={styles.favoriteContainer}>
+                <Icons.HeartBlack color={isFavorite ? 'red' : 'black'} style={styles.favorite} />
+            </TouchableOpacity>
+        ),
+        [isFavorite, onChangeFavorite],
+    );
+
     const renderBody = useCallback(() => {
         return (
             <View style={styles.body}>
-                {renderImage()}
-                {renderDescription()}
+                <Avatar avatar={item.avatar} />
+                {renderFavoriteBtn()}
+                <Description user={item} />
                 {renderRemoveButton()}
             </View>
         );
-    }, [renderDescription, renderImage, renderRemoveButton]);
+    }, [renderFavoriteBtn, item, renderRemoveButton]);
 
     const renderContainer = useCallback(() => {
         return <View style={styles.container}>{renderBody()}</View>;
@@ -81,26 +76,19 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
     },
-    imageContainer: {
-        ...COMMON_STYLES.ml_1,
-        height: 100,
-        width: 100,
-        borderWidth: 1,
-        borderRadius: 16,
-    },
-    image: {
-        height: '100%',
-        width: '100%',
-        borderRadius: 16,
-    },
-    text: {
-        ...COMMON_STYLES.ml_2,
-    },
     removeIcon: {
         fontSize: 24,
     },
     removeIconWrapper: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    favoriteContainer: {
+        width: 24,
+        height: 24,
+    },
+    favorite: {
+        width: 24,
+        height: 24,
     },
 });
